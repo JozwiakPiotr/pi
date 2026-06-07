@@ -1,3 +1,3 @@
 # UX/UI
 
-![rysunek ui](projinz.excalidraw)
+![rysunek ui](projinz.svg)
