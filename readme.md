@@ -5,11 +5,9 @@
 3. [UX/UI](docs/uxui.md)
 
 # TODO
-- UI Desing - prototypowanie
-    - na kartce
 - architektura
-    - mermaid
     - c4
+    - mermaid
 - product backlog refinement
     - User Stories
     - kryteria akceptacji
