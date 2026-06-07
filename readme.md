@@ -2,6 +2,7 @@
 
 1. [Event storming](docs/event_storming.md)
 2. [Architektura](docs/architecture.md)
+3. [UX/UI](docs/uxui.md)
 
 # TODO
 - UI Desing - prototypowanie
