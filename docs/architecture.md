@@ -76,10 +76,14 @@ sequenceDiagram
     mnt ->> main: Assign issue to me
     emp ->> main: Get issue status
     mnt ->> Inventory: Set desk as out of service
+    Inventory ->> rabbit: Desk state changed
+    rabbit ->> Booking: Desk state changed
     mnt ->> mnt: Resolve issue
     mnt ->> main: Set issue as resolved
     participant rabbit@{ "type" : "queue" } as RabbitMQ
     main ->> rabbit: Issue resolved
     rabbit ->> Inventory: Issue resolved
     Inventory ->> Inventory: Set desk as available
+    Inventory ->> rabbit: Desk state changed
+    rabbit ->> Booking: Desk state changed
 ```
