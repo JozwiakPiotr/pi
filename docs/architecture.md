@@ -36,6 +36,53 @@ stateDiagram-v2
 
 ## Inventory
 
+```mermaid
+---
+title: Desk relationships
+---
+erDiagram
+    Room {
+        int ID PK
+        string Number
+        int Level
+    }
+    Desk {
+        int ID PK
+        string Number
+        int RoomID FK
+    }
+    Feature {
+        int ID PK
+        string Name
+    }
+    Desk_Feature {
+        int DeskID FK
+        int FeatureID FK
+    }
+    Asset {
+        int ID PK
+        string Name
+    }
+    Desk_Asset {
+        int DeskID FK
+        int AssetID FK
+        int count
+    }
+
+    %% Relacja 1:N - Jeden Pokój ma wiele Biurek
+    Room ||--o{ Desk : "has"
+
+    %% Relacja 1:N - Jedno Biurko ma wiele wpisów o sprzęcie
+    Desk ||--o{ Desk_Asset : "has"
+    
+    %% Relacja 1:N - Jeden Sprzęt ze słownika może być na wielu biurkach
+    Asset ||--o{ Desk_Asset : "is assigned to"
+
+    %% Relacje dla Cech (Features) - fizyczny model bazy wymaga tabeli łączącej
+    Desk ||--o{ Desk_Feature : "has"
+    Feature ||--o{ Desk_Feature : "is assigned to"
+```
+
 # Dynamic view
 ## Booking a desk
 ```mermaid
