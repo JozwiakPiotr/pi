@@ -1,0 +1,212 @@
+openapi: '3.0.2'
+info:
+  title: Inventory API
+  version: '1.0'
+servers:
+  - url: /api
+paths:
+  # 1. Pobieranie informacji o biurku (pokój, wyposażenie, cechy) oraz
+  # 5. Aktualizacja (patch) wyposażenia i właściwości biurka
+  /desks/{desk_number}:
+    get:
+      summary: Pobierz szczegóły biurka
+      description: Zwraca informacje o biurku, jego pokoju (Room), przypisanym sprzęcie (Asset i Desk_Asset) oraz cechach (Feature).
+      parameters:
+      - name: desk_number
+        in: path
+        required: true
+        description: Numer biurka
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeskDetails'
+        '404':
+          description: Nie znaleziono biurka
+          
+    patch:
+      summary: Aktualizuj wyposażenie i właściwości biurka
+      description: Pozwala na modyfikację przypisanych cech (Feature) oraz zasobów (Asset) z uwzględnieniem ilości.
+      parameters:
+      - name: desk_number
+        in: path
+        required: true
+        description: Numer biurka
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeskUpdate'
+      responses:
+        '200':
+          description: Pomyślnie zaktualizowano biurko
+        '404':
+          description: Nie znaleziono biurka
+
+  # 4. Oznaczanie biurka jako dostępne/niedostępne
+  /desks/{desk_number}/state:
+    patch:
+      summary: Zmień status dostępności biurka
+      description: Zmienia flagę OutOfService dla biurka, wpływając na jego dostępność (jak pokazano w diagramach Desk state).
+      parameters:
+      - name: desk_number
+        in: path
+        required: true
+        description: Numer biurka
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeskStateUpdate'
+      responses:
+        '200':
+          description: Zaktualizowano status biurka
+        '404':
+          description: Nie znaleziono biurka
+
+  # 2. Batchowe dodawanie biurek
+  /desks/batch:
+    post:
+      summary: Dodaj biurka batchowo
+      description: Przyjmuje tablicę biurek w formacie JSON do masowego tworzenia.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DeskCreate'
+      responses:
+        '201':
+          description: Pomyślnie utworzono biurka
+
+  # 3. Batchowe dodawanie pokoi
+  /rooms/batch:
+    post:
+      summary: Dodaj pokoje batchowo
+      description: Przyjmuje tablicę pokoi w formacie JSON do masowego tworzenia.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RoomCreate'
+      responses:
+        '201':
+          description: Pomyślnie utworzono pokoje
+
+components:
+  schemas:
+    Room:
+      type: object
+      properties:
+        number:
+          type: string
+        level:
+          type: integer
+
+    Feature:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    AssetCount:
+      type: object
+      description: Reprezentuje relację Desk_Asset wraz z danymi sprzętu (Asset)
+      properties:
+        assetId:
+          type: integer
+        name:
+          type: string
+        count:
+          type: integer
+
+    DeskDetails:
+      type: object
+      properties:
+        number:
+          type: string
+        outOfService:
+          type: boolean
+        room:
+          $ref: '#/components/schemas/Room'
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feature'
+        assets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetCount'
+
+    DeskCreate:
+      type: object
+      required:
+        - number
+        - roomId
+      properties:
+        number:
+          type: string
+        roomId:
+          type: integer
+        outOfService:
+          type: boolean
+          default: false
+
+    RoomCreate:
+      type: object
+      required:
+        - number
+        - level
+      properties:
+        number:
+          type: string
+        level:
+          type: integer
+
+    DeskStateUpdate:
+      type: object
+      required:
+        - outOfService
+      properties:
+        outOfService:
+          type: boolean
+          description: Przekaż true, jeśli biurko wymaga naprawy (niedostępne), lub false, jeśli działa.
+
+    DeskUpdate:
+      type: object
+      properties:
+        featureIds:
+          type: array
+          description: Lista identyfikatorów przypisanych cech (N:N relacja)
+          items:
+            type: integer
+        assets:
+          type: array
+          description: Stan sprzętu przypisanego do biurka (Asset i Count)
+          items:
+            type: object
+            required:
+              - assetId
+              - count
+            properties:
+              assetId:
+                type: integer
+              count:
+                type: integer

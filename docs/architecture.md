@@ -50,6 +50,7 @@ erDiagram
         int ID PK
         string Number
         int RoomID FK
+        bool OutOfService
     }
     Feature {
         int ID PK
