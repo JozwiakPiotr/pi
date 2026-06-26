@@ -55,10 +55,6 @@ erDiagram
         int ID PK
         string Name
     }
-    Desk_Feature {
-        int DeskID FK
-        int FeatureID FK
-    }
     Asset {
         int ID PK
         string Name
@@ -69,6 +65,9 @@ erDiagram
         int count
     }
 
+    %% Relacja N:N - Desk ma wiele lub 0 Feature i na odwrót 
+    Desk }o--o{ Feature: "has"
+
     %% Relacja 1:N - Jeden Pokój ma wiele Biurek
     Room ||--o{ Desk : "has"
 
@@ -77,10 +76,6 @@ erDiagram
     
     %% Relacja 1:N - Jeden Sprzęt ze słownika może być na wielu biurkach
     Asset ||--o{ Desk_Asset : "is assigned to"
-
-    %% Relacje dla Cech (Features) - fizyczny model bazy wymaga tabeli łączącej
-    Desk ||--o{ Desk_Feature : "has"
-    Feature ||--o{ Desk_Feature : "is assigned to"
 ```
 
 # Dynamic view
