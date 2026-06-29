@@ -6,7 +6,7 @@
 
 # TODO
 - architektura
-    - c4
+    - c4 https://docs.structurizr.com/
     - mermaid
 - product backlog refinement
     - User Stories
